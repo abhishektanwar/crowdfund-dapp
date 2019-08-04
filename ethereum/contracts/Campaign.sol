@@ -1,6 +1,6 @@
 pragma solidity ^0.4.25;
 
-contract campaignFactory {
+contract CampaignFactory {
     address[] public deployedCampaigns;
     
     function createCampaign(uint minimum) public {
@@ -8,7 +8,7 @@ contract campaignFactory {
         deployedCampaigns.push(newCampaign);
         
     }
-    function getdeployedCampaigns() public view returns (address[] memory) {
+    function getDeployedCampaigns() public view returns (address[] memory) {
         return deployedCampaigns;
     }
     

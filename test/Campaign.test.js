@@ -65,4 +65,41 @@ describe('Camapigns', () => {
             assert(error);
         }
     });
+
+    it('allows a manager to make payment request', async () => {
+        await camapaign.methods
+            .createRequest('buy battries' , '100',accounts[1]).send({
+                from:accounts[0],
+                gas:'1000000'
+            });
+        const request = await camapaign.methods.requests(0).call();
+        assert.equal('buy battries',request.description)    ; 
+    });
+
+    it('processes request',async () => {
+        await camapaign.methods.contribute().send({
+            from : accounts[0],
+            value : web3.utils.toWei('10','ether')
+        });
+
+        await camapaign.methods
+            .createRequest('but casing',web3.utils.toWei('5','ether'),accounts[1])
+            .send({from:accounts[0],gas:'1000000'});
+
+        await camapaign.methods.approveRequest(0).send({
+            from:accounts[0],
+            gas:'1000000'
+        });
+        
+        await camapaign.methods.finalizeRequest(0).send({
+            from:accounts[0],
+            gas : '1000000'
+        });
+
+        let balance = await web3.eth.getBalance(accounts[1]);
+        balance = web3.utils.fromWei(balance,'ether');
+        balance = parseFloat(balance);
+        console.log(balance);
+        assert(balance > 104)
+    });
 });
