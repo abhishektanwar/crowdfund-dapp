@@ -1,16 +1,40 @@
 import React,{ Component } from 'react';
 import Layout from '../../components/Layout';
-import { Button,Form ,Input } from 'semantic-ui-react';
+import { Button,Form ,Input, Message } from 'semantic-ui-react';
+import web3 from '../../ethereum/web3';
+import factory from '../../ethereum/factory';
+import { Router } from '../../routes';
+
 class CampaignNew extends Component {
 
     state = {
-        minimumContribution: ''
+        minimumContribution: '',
+        errorMessage:'',
+        loading:false
     };
+
+    onSubmit = async (event) => {
+        event.preventDefault();
+        this.setState({loading:true , errorMessage:''});
+        try {
+            const accounts = await web3.eth.getAccounts();
+            await factory.methods
+                .createCampaign(this.state.minimumContribution)
+                .send({from: accounts[0]
+
+            });
+        Router.pushRoute('/');
+        } catch (error) {
+            this.setState({ errorMessage:error.message });
+        }
+        this.setState({loading:false});
+    };
+
     render() {
         return (
             <Layout>
                 <h1>Create a Campaign</h1>
-                <Form>
+                <Form onSubmit = {this.onSubmit} error={!!this.state.errorMessage}>
                     <Form.Field>
                         <label>Minimum Contribution</label>
                         <Input 
@@ -20,8 +44,8 @@ class CampaignNew extends Component {
                             onChange = {event => this.setState({ minimumContribution: event.target.value })}
                             />
                     </Form.Field>
-
-                    <Button primary>Create Campaign</Button>
+                    <Message error header="Oops!" content={this.state.errorMessage}></Message>
+                    <Button loading={ this.state.loading } primary>Create Campaign</Button>
                 </Form>
             </Layout>
         );
