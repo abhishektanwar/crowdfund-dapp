@@ -191,7 +191,7 @@ class RequestRow extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       Row,
       Cell
     } = semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"];
-    return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Row, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, this.props.id), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, this.props.request.description), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, _ethereum_web3__WEBPACK_IMPORTED_MODULE_2__["default"].utils.fromWei(this.props.request.value, 'ether')), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, this.props.request.recipient));
+    return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Row, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, this.props.id), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, this.props.request.description), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, _ethereum_web3__WEBPACK_IMPORTED_MODULE_2__["default"].utils.fromWei(this.props.request.value, 'ether')), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, this.props.request.recipient), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, this.props.request.approvalcount, "/", this.props.approversCount));
   }
 
 }
@@ -324,12 +324,15 @@ class RequestIndexsd extends react__WEBPACK_IMPORTED_MODULE_2__["Component"] {
     } = props.query;
     const campaign = Object(_ethereum_campaign__WEBPACK_IMPORTED_MODULE_6__["default"])(address);
     const requestCount = await campaign.methods.getRequestCount().call();
+    const approversCount = await campaign.methods.approversCount().call();
+    console.log(approversCount);
     const requests = await _babel_runtime_corejs2_core_js_promise__WEBPACK_IMPORTED_MODULE_1___default.a.all(Array(_babel_runtime_corejs2_core_js_parse_int__WEBPACK_IMPORTED_MODULE_0___default()(requestCount)).fill().map((element, index) => {
       return campaign.methods.requests(index).call();
     }));
     return {
       address,
-      requests
+      requests,
+      approversCount
     };
   }
 
@@ -339,7 +342,8 @@ class RequestIndexsd extends react__WEBPACK_IMPORTED_MODULE_2__["Component"] {
         key: index,
         id: index,
         request: request,
-        address: this.props.address
+        address: this.props.address,
+        approversCount: this.props.approversCount
       });
     });
   }
