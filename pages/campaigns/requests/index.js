@@ -17,7 +17,7 @@ class RequestIndexsd extends Component{
         Array(parseInt(requestCount)).fill().map((element,index)=> {
             return campaign.methods.requests(index).call();
             }));
-        return { address,requests,approversCount };
+        return { address,requests,approversCount,requestCount };
     }
 
     renderRow() {
@@ -77,6 +77,7 @@ class RequestIndexsd extends Component{
                     </Body>
 
                 </Table>
+                <div>Found { this.props.requestCount } requests</div>
 
             </Layout>
             

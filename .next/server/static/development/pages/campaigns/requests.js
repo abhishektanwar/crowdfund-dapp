@@ -176,22 +176,94 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! semantic-ui-react */ "semantic-ui-react");
-/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _ethereum_web3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ethereum/web3 */ "./ethereum/web3.js");
+/* harmony import */ var _babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/defineProperty */ "./node_modules/@babel/runtime-corejs2/helpers/esm/defineProperty.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! semantic-ui-react */ "semantic-ui-react");
+/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _ethereum_web3__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../ethereum/web3 */ "./ethereum/web3.js");
+/* harmony import */ var _ethereum_campaign__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../ethereum/campaign */ "./ethereum/campaign.js");
+/* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../routes */ "./routes.js");
+/* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_routes__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var crypto__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! crypto */ "crypto");
+/* harmony import */ var crypto__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(crypto__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var https__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! https */ "https");
+/* harmony import */ var https__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(https__WEBPACK_IMPORTED_MODULE_7__);
 
 
 
 
-class RequestRow extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
+
+
+
+
+
+class RequestRow extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
+  constructor(...args) {
+    super(...args);
+
+    Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])(this, "state", {
+      loading: false,
+      loading_finalize: false
+    });
+
+    Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])(this, "onApprove", async event => {
+      event.preventDefault();
+      this.setState({
+        loading: true
+      });
+
+      try {
+        const accounts = await _ethereum_web3__WEBPACK_IMPORTED_MODULE_3__["default"].eth.getAccounts();
+        const campaign = Object(_ethereum_campaign__WEBPACK_IMPORTED_MODULE_4__["default"])(this.props.address);
+        await campaign.methods.approveRequest(this.props.id).send({
+          from: accounts[0]
+        });
+        _routes__WEBPACK_IMPORTED_MODULE_5__["Router"].replaceRoute(`/campaigns/${this.props.address}/requests`);
+      } catch (error) {}
+
+      this.setState({
+        loading: false
+      });
+    });
+
+    Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])(this, "onFinalize", async event => {
+      event.preventDefault();
+      this.setState({
+        loading_finalize: true
+      });
+
+      try {
+        const accounts = await _ethereum_web3__WEBPACK_IMPORTED_MODULE_3__["default"].eth.getAccounts();
+        const campaign = Object(_ethereum_campaign__WEBPACK_IMPORTED_MODULE_4__["default"])(this.props.address);
+        await campaign.methods.finalizeRequest(this.props.id).send({
+          from: accounts[0]
+        });
+        _routes__WEBPACK_IMPORTED_MODULE_5__["Router"].replaceRoute(`/campaigns/${this.props.address}/requests`);
+      } catch (error) {}
+
+      this.setState({
+        loading_finalize: false
+      });
+    });
+  }
+
   render() {
     const {
       Row,
       Cell
-    } = semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"];
-    return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Row, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, this.props.id), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, this.props.request.description), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, _ethereum_web3__WEBPACK_IMPORTED_MODULE_2__["default"].utils.fromWei(this.props.request.value, 'ether')), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, this.props.request.recipient), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Cell, null, this.props.request.approvalcount, "/", this.props.approversCount));
+    } = semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__["Table"];
+    const ready_to_finalize = this.props.request.approvalcount > this.props.request.approversCount / 2;
+    return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(Row, {
+      disabled: this.props.request.complete,
+      positive: ready_to_finalize && !this.props.request.complete
+    }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(Cell, null, this.props.id), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(Cell, null, this.props.request.description), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(Cell, null, _ethereum_web3__WEBPACK_IMPORTED_MODULE_3__["default"].utils.fromWei(this.props.request.value, 'ether')), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(Cell, null, this.props.request.recipient), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(Cell, null, this.props.request.approvalcount, "/", this.props.approversCount), this.props.request.complete ? null : react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(Cell, null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+      loading: this.state.loading,
+      onClick: this.onApprove
+    }, "Approve")), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(Cell, null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+      loading_finalize: this.state.loading_finalize,
+      onClick: this.onFinalize
+    }, "Finalize Request")));
   }
 
 }
@@ -261,6 +333,17 @@ if (false) {} else {
 
 /***/ }),
 
+/***/ "./node_modules/@babel/runtime-corejs2/core-js/object/define-property.js":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@babel/runtime-corejs2/core-js/object/define-property.js ***!
+  \*******************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(/*! core-js/library/fn/object/define-property */ "core-js/library/fn/object/define-property");
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime-corejs2/core-js/parse-int.js":
 /*!******************************************************************!*\
   !*** ./node_modules/@babel/runtime-corejs2/core-js/parse-int.js ***!
@@ -280,6 +363,36 @@ module.exports = __webpack_require__(/*! core-js/library/fn/parse-int */ "core-j
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(/*! core-js/library/fn/promise */ "core-js/library/fn/promise");
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime-corejs2/helpers/esm/defineProperty.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/@babel/runtime-corejs2/helpers/esm/defineProperty.js ***!
+  \***************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return _defineProperty; });
+/* harmony import */ var _core_js_object_define_property__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../core-js/object/define-property */ "./node_modules/@babel/runtime-corejs2/core-js/object/define-property.js");
+/* harmony import */ var _core_js_object_define_property__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_core_js_object_define_property__WEBPACK_IMPORTED_MODULE_0__);
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    _core_js_object_define_property__WEBPACK_IMPORTED_MODULE_0___default()(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
 
 /***/ }),
 
@@ -332,7 +445,8 @@ class RequestIndexsd extends react__WEBPACK_IMPORTED_MODULE_2__["Component"] {
     return {
       address,
       requests,
-      approversCount
+      approversCount,
+      requestCount
     };
   }
 
@@ -363,7 +477,7 @@ class RequestIndexsd extends react__WEBPACK_IMPORTED_MODULE_2__["Component"] {
       style: {
         marginBottom: '10px'
       }
-    }, "Add Request"))), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__["Table"], null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(Header, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(Row, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "ID"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "Description"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "Amount"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "Recipient"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "Approval"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "Approve"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "Finalize"))), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(Body, null, this.renderRow())));
+    }, "Add Request"))), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__["Table"], null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(Header, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(Row, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "ID"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "Description"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "Amount"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "Recipient"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "Approval"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "Approve"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(HeaderCell, null, "Finalize"))), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(Body, null, this.renderRow())), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("div", null, "Found ", this.props.requestCount, " requests"));
   }
 
 }
@@ -401,6 +515,17 @@ module.exports = __webpack_require__(/*! /home/abhishek/kickstarter_bc/kickstart
 
 /***/ }),
 
+/***/ "core-js/library/fn/object/define-property":
+/*!************************************************************!*\
+  !*** external "core-js/library/fn/object/define-property" ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/library/fn/object/define-property");
+
+/***/ }),
+
 /***/ "core-js/library/fn/parse-int":
 /*!***********************************************!*\
   !*** external "core-js/library/fn/parse-int" ***!
@@ -420,6 +545,17 @@ module.exports = require("core-js/library/fn/parse-int");
 /***/ (function(module, exports) {
 
 module.exports = require("core-js/library/fn/promise");
+
+/***/ }),
+
+/***/ "crypto":
+/*!*************************!*\
+  !*** external "crypto" ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("crypto");
 
 /***/ }),
 
